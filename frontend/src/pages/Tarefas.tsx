@@ -18,6 +18,8 @@ const Tarefas: React.FC = () => {
   const [filtro, setFiltro] = useState('');
   const { token, usuario, logout } = useAuth();
   const navigate = useNavigate();
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [formEditar] = Form.useForm();
 
   const buscarTarefas = async () => {
     try {
@@ -48,6 +50,48 @@ const Tarefas: React.FC = () => {
       buscarTarefas();
     } catch (error) {
       message.error('Erro ao criar tarefa.');
+    }
+  };
+
+  const iniciarEdicao = (tarefa: Tarefa) => {
+    setEditingId(tarefa.id);
+    formEditar.setFieldsValue(tarefa);
+  };
+
+  const cancelarEdicao = () => {
+    setEditingId(null);
+    formEditar.resetFields();
+  };
+
+  const salvarEdicao = async (id: number) => {
+    try {
+      const valores = await formEditar.validateFields();
+      await axios.put(`http://localhost:3001/api/tarefas/${id}`, valores, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success('Tarefa atualizada com sucesso!');
+      buscarTarefas();
+      cancelarEdicao();
+    } catch {
+      message.error('Erro ao atualizar tarefa.');
+    }
+  };
+
+  const deletarTarefa = async (id: number) => {
+    if (!window.confirm('Tem certeza que deseja excluir esta tarefa?')) return;
+
+    try {
+      await axios.delete(`http://localhost:3001/api/tarefas/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success('Tarefa deletada com sucesso!');
+      buscarTarefas();
+    } catch {
+      message.error('Erro ao deletar tarefa.');
     }
   };
 
@@ -103,14 +147,38 @@ const Tarefas: React.FC = () => {
         bordered
         dataSource={tarefasFiltradas}
         renderItem={(tarefa) => (
-          <List.Item>
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <div style={{ fontWeight: 600 }}>{tarefa.titulo}</div>
-              <div>{tarefa.descricao}</div>
-              <Tag color={tarefa.status === 'concluida' ? 'green' : 'orange'}>
-                {tarefa.status}
-              </Tag>
-            </Space>
+          <List.Item
+            actions={
+              editingId === tarefa.id ? [
+                <Button onClick={() => salvarEdicao(tarefa.id)} type="link">Salvar</Button>,
+                <Button onClick={cancelarEdicao} type="link">Cancelar</Button>,
+              ] : [
+                <Button onClick={() => iniciarEdicao(tarefa)} type="link">Editar</Button>,
+                <Button onClick={() => deletarTarefa(tarefa.id)} type="link" danger>Excluir</Button>
+              ]
+            }
+          >
+            {editingId === tarefa.id ? (
+              <Form form={formEditar} layout="vertical" style={{ width: '100%' }}>
+                <Form.Item name="titulo" label="Título" rules={[{ required: true }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="descricao" label="Descrição" rules={[{ required: true }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="status" label="Status" rules={[{ required: true }]}>
+                  <Input />
+                </Form.Item>
+              </Form>
+            ) : (
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <div style={{ fontWeight: 600 }}>{tarefa.titulo}</div>
+                <div>{tarefa.descricao}</div>
+                <Tag color={tarefa.status === 'concluida' ? 'green' : 'orange'}>
+                  {tarefa.status}
+                </Tag>
+              </Space>
+            )}
           </List.Item>
         )}
       />
