@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Input, List, Space, Tag, Typography, message } from 'antd';
+import { Button, Form, Input, List, Space, Tag, Typography, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -37,6 +37,20 @@ const Tarefas: React.FC = () => {
     buscarTarefas();
   }, []);
 
+  const criarTarefa = async (valores: { titulo: string; descricao: string }) => {
+    try {
+      await axios.post('http://localhost:3001/api/tarefas', valores, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success('Tarefa criada com sucesso!');
+      buscarTarefas();
+    } catch (error) {
+      message.error('Erro ao criar tarefa.');
+    }
+  };
+
   const tarefasFiltradas = tarefas.filter((t) =>
     t.titulo.toLowerCase().includes(filtro.toLowerCase())
   );
@@ -51,6 +65,29 @@ const Tarefas: React.FC = () => {
           Sair
         </Button>
       </Space>
+
+      <Form layout="vertical" onFinish={criarTarefa} style={{ marginBottom: 32 }}>
+        <Title level={5}>Nova Tarefa</Title>
+        <Form.Item
+          label="Título"
+          name="titulo"
+          rules={[{ required: true, message: 'Informe o título' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Descrição"
+          name="descricao"
+          rules={[{ required: true, message: 'Informe a descrição' }]}
+        >
+          <Input.TextArea rows={3} />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Criar Tarefa
+          </Button>
+        </Form.Item>
+      </Form>
 
       <Space style={{ marginBottom: 16 }}>
         <Input
