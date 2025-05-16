@@ -3,20 +3,24 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Typography, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const { Title } = Typography;
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // ⬅️ importa do contexto
 
   const onFinish = async (values: { email: string; senha: string }) => {
     setLoading(true);
     try {
       const res = await axios.post('http://localhost:3001/api/auth/login', values);
-      const { token } = res.data;
+      const { token, nome, id, email } = res.data;
 
-      localStorage.setItem('token', token);
+      // Usa o login do contexto
+      login({ id, nome, email }, token);
+
       message.success('Login realizado com sucesso!');
       navigate('/tarefas');
     } catch (err: any) {
