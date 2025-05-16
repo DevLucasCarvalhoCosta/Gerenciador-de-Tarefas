@@ -1,20 +1,30 @@
 import { RequestHandler } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { db } from '../config/db';
+import { prisma } from '../prisma/client';
 
 const register: RequestHandler = async (req, res) => {
   const { nome, email, senha } = req.body;
 
   try {
-    const [user] = await db.query("SELECT * FROM usuarios WHERE email = ?", [email]);
-    if ((user as any[]).length > 0) {
+    const usuarioExistente = await prisma.usuario.findUnique({
+      where: { email }
+    });
+
+    if (usuarioExistente) {
       res.status(400).json({ message: "Email já cadastrado." });
       return;
     }
 
     const senhaCriptografada = await bcrypt.hash(senha, 10);
-    await db.query("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)", [nome, email, senhaCriptografada]);
+
+    await prisma.usuario.create({
+      data: {
+        nome,
+        email,
+        senha: senhaCriptografada
+      }
+    });
 
     res.status(201).json({ message: "Usuário registrado com sucesso!" });
   } catch (error) {
@@ -22,13 +32,14 @@ const register: RequestHandler = async (req, res) => {
   }
 };
 
-
 const login: RequestHandler = async (req, res) => {
   const { email, senha } = req.body;
 
   try {
-    const [rows] = await db.query("SELECT * FROM usuarios WHERE email = ?", [email]);
-    const usuario = (rows as any[])[0];
+    const usuario = await prisma.usuario.findUnique({
+      where: { email }
+    });
+
     if (!usuario) {
       res.status(404).json({ message: "Usuário não encontrado." });
       return;
@@ -40,9 +51,11 @@ const login: RequestHandler = async (req, res) => {
       return;
     }
 
-    const token = jwt.sign({ id: usuario.id, email: usuario.email }, process.env.JWT_SECRET!, {
-      expiresIn: "8h"
-    });
+    const token = jwt.sign(
+      { id: usuario.id, email: usuario.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "8h" }
+    );
 
     res.json({ token, nome: usuario.nome, id: usuario.id });
   } catch (error) {
