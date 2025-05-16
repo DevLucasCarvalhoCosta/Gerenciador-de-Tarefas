@@ -4,7 +4,7 @@ import authMiddleware from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(authMiddleware); 
 
 router.post('/', TarefaController.criar);
 router.get('/', TarefaController.listar);
