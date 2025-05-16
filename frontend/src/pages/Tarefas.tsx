@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, List, Space, Tag, Typography, message } from 'antd';
+import { Button, Form, Input, List, Modal, Space, Tag, Typography, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -18,8 +18,9 @@ const Tarefas: React.FC = () => {
   const [filtro, setFiltro] = useState('');
   const { token, usuario, logout } = useAuth();
   const navigate = useNavigate();
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [formEditar] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingTarefa, setEditingTarefa] = useState<Tarefa | null>(null);
+  const [form] = Form.useForm();
 
   const buscarTarefas = async () => {
     try {
@@ -53,30 +54,35 @@ const Tarefas: React.FC = () => {
     }
   };
 
-  const iniciarEdicao = (tarefa: Tarefa) => {
-    setEditingId(tarefa.id);
-    formEditar.setFieldsValue(tarefa);
-  };
+  const tarefasFiltradas = tarefas.filter((t) =>
+    t.titulo.toLowerCase().includes(filtro.toLowerCase())
+  );
 
-  const cancelarEdicao = () => {
-    setEditingId(null);
-    formEditar.resetFields();
-  };
-
-  const salvarEdicao = async (id: number) => {
+  const handleOk = async () => {
     try {
-      const valores = await formEditar.validateFields();
-      await axios.put(`http://localhost:3001/api/tarefas/${id}`, valores, {
+      const values = await form.validateFields();
+      await axios.put(`http://localhost:3001/api/tarefas/${editingTarefa?.id}`, values, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       message.success('Tarefa atualizada com sucesso!');
+      setIsModalVisible(false);
       buscarTarefas();
-      cancelarEdicao();
-    } catch {
+    } catch (error) {
       message.error('Erro ao atualizar tarefa.');
     }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    form.resetFields();
+  };
+
+  const handleEdit = (tarefa: Tarefa) => {
+    setEditingTarefa(tarefa);
+    form.setFieldsValue(tarefa);
+    setIsModalVisible(true);
   };
 
   const deletarTarefa = async (id: number) => {
@@ -94,10 +100,6 @@ const Tarefas: React.FC = () => {
       message.error('Erro ao deletar tarefa.');
     }
   };
-
-  const tarefasFiltradas = tarefas.filter((t) =>
-    t.titulo.toLowerCase().includes(filtro.toLowerCase())
-  );
 
   return (
     <div style={{ maxWidth: 800, margin: '40px auto', padding: 16 }}>
@@ -148,40 +150,55 @@ const Tarefas: React.FC = () => {
         dataSource={tarefasFiltradas}
         renderItem={(tarefa) => (
           <List.Item
-            actions={
-              editingId === tarefa.id ? [
-                <Button onClick={() => salvarEdicao(tarefa.id)} type="link">Salvar</Button>,
-                <Button onClick={cancelarEdicao} type="link">Cancelar</Button>,
-              ] : [
-                <Button onClick={() => iniciarEdicao(tarefa)} type="link">Editar</Button>,
-                <Button onClick={() => deletarTarefa(tarefa.id)} type="link" danger>Excluir</Button>
-              ]
-            }
+            actions={[
+              <Button onClick={() => handleEdit(tarefa)} type="link">Editar</Button>,
+              <Button onClick={() => deletarTarefa(tarefa.id)} type="link" danger>Excluir</Button>,
+            ]}
           >
-            {editingId === tarefa.id ? (
-              <Form form={formEditar} layout="vertical" style={{ width: '100%' }}>
-                <Form.Item name="titulo" label="Título" rules={[{ required: true }]}>
-                  <Input />
-                </Form.Item>
-                <Form.Item name="descricao" label="Descrição" rules={[{ required: true }]}>
-                  <Input />
-                </Form.Item>
-                <Form.Item name="status" label="Status" rules={[{ required: true }]}>
-                  <Input />
-                </Form.Item>
-              </Form>
-            ) : (
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <div style={{ fontWeight: 600 }}>{tarefa.titulo}</div>
-                <div>{tarefa.descricao}</div>
-                <Tag color={tarefa.status === 'concluida' ? 'green' : 'orange'}>
-                  {tarefa.status}
-                </Tag>
-              </Space>
-            )}
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <div style={{ fontWeight: 600 }}>{tarefa.titulo}</div>
+              <div>{tarefa.descricao}</div>
+              <Tag color={tarefa.status === 'concluida' ? 'green' : 'orange'}>
+                {tarefa.status}
+              </Tag>
+            </Space>
           </List.Item>
         )}
       />
+
+      {/* Modal para editar tarefa */}
+      <Modal
+        title="Editar Tarefa"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Salvar"
+        cancelText="Cancelar"
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            label="Título"
+            name="titulo"
+            rules={[{ required: true, message: 'Informe o título' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Descrição"
+            name="descricao"
+            rules={[{ required: true, message: 'Informe a descrição' }]}
+          >
+            <Input.TextArea rows={3} />
+          </Form.Item>
+          <Form.Item
+            label="Status"
+            name="status"
+            rules={[{ required: true, message: 'Informe o status' }]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
