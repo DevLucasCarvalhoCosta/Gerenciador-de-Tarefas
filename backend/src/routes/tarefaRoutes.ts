@@ -4,9 +4,10 @@ import authMiddleware from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
+router.use(authMiddleware);
 
 router.post('/', TarefaController.criar);
-router.get('/', authMiddleware, TarefaController.listar);
+router.get('/', TarefaController.listar);
 router.put('/:id', TarefaController.atualizar);
 router.delete('/:id', TarefaController.deletar);
 

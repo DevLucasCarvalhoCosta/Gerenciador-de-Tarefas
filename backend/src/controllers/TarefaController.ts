@@ -7,9 +7,10 @@ class TarefaController {
     const usuarioId = (req as any).usuario.id;
 
     try {
-      await db.query('INSERT INTO tarefas (titulo, descricao, usuario_id) VALUES (?, ?, ?)', [
-        titulo, descricao, usuarioId
-      ]);
+      await db.query(
+        'INSERT INTO tarefas (titulo, descricao, usuario_id) VALUES (?, ?, ?)',
+        [titulo, descricao, usuarioId]
+      );
       res.status(201).json({ message: 'Tarefa criada com sucesso!' });
     } catch (error) {
       res.status(500).json({ error: 'Erro ao criar tarefa.' });
@@ -23,7 +24,7 @@ class TarefaController {
       const [tarefas] = await db.query('SELECT * FROM tarefas WHERE usuario_id = ?', [usuarioId]);
       res.json(tarefas);
     } catch (error) {
-      res.status(500).json({ error: 'Erro ao buscar tarefas.' });
+      res.status(500).json({ error: 'Erro ao listar tarefas.' });
     }
   }
 
@@ -33,12 +34,12 @@ class TarefaController {
     const usuarioId = (req as any).usuario.id;
 
     try {
-      const [resultado] = await db.query(
+      const [result] = await db.query(
         'UPDATE tarefas SET titulo = ?, descricao = ?, status = ? WHERE id = ? AND usuario_id = ?',
         [titulo, descricao, status, id, usuarioId]
       );
 
-      if ((resultado as any).affectedRows === 0) {
+      if ((result as any).affectedRows === 0) {
         return res.status(404).json({ message: 'Tarefa não encontrada ou sem permissão.' });
       }
 
@@ -53,9 +54,12 @@ class TarefaController {
     const usuarioId = (req as any).usuario.id;
 
     try {
-      const [resultado] = await db.query('DELETE FROM tarefas WHERE id = ? AND usuario_id = ?', [id, usuarioId]);
+      const [result] = await db.query(
+        'DELETE FROM tarefas WHERE id = ? AND usuario_id = ?',
+        [id, usuarioId]
+      );
 
-      if ((resultado as any).affectedRows === 0) {
+      if ((result as any).affectedRows === 0) {
         return res.status(404).json({ message: 'Tarefa não encontrada ou sem permissão.' });
       }
 
@@ -65,4 +69,5 @@ class TarefaController {
     }
   }
 }
+
 export default TarefaController;
