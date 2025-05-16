@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Input, List, message, Space, Tag } from 'antd';
+import { Button, Input, List, Space, Tag, Typography, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+const { Title } = Typography;
 
 interface Tarefa {
   id: number;
@@ -13,9 +16,8 @@ interface Tarefa {
 const Tarefas: React.FC = () => {
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
   const [filtro, setFiltro] = useState('');
+  const { token, usuario, logout } = useAuth();
   const navigate = useNavigate();
-
-  const token = localStorage.getItem('token');
 
   const buscarTarefas = async () => {
     try {
@@ -27,7 +29,7 @@ const Tarefas: React.FC = () => {
       setTarefas(res.data);
     } catch (error) {
       message.error('Erro ao buscar tarefas. Faça login novamente.');
-      navigate('/');
+      logout();
     }
   };
 
@@ -41,6 +43,15 @@ const Tarefas: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 800, margin: '40px auto', padding: 16 }}>
+      <Space style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
+        <Title level={4} style={{ margin: 0 }}>
+          Olá, {usuario?.nome} 👋
+        </Title>
+        <Button danger onClick={logout}>
+          Sair
+        </Button>
+      </Space>
+
       <Space style={{ marginBottom: 16 }}>
         <Input
           placeholder="Filtrar por título..."
@@ -51,7 +62,7 @@ const Tarefas: React.FC = () => {
       </Space>
 
       <List
-        header={<h2>Minhas Tarefas</h2>}
+        header={<h3>Minhas Tarefas</h3>}
         bordered
         dataSource={tarefasFiltradas}
         renderItem={(tarefa) => (
