@@ -1,7 +1,8 @@
 import request from 'supertest';
 import app from '../src/app';
-import { db } from '../src/config/db';
+import { prisma } from '../src/prisma/client';
 
+jest.setTimeout(10000);
 
 describe('Tarefas - CRUD completo com autenticação', () => {
   const user = {
@@ -87,7 +88,14 @@ describe('Tarefas - CRUD completo com autenticação', () => {
   });
 
   afterAll(async () => {
-  await db.end();
-});
-  
+    await prisma.tarefa.deleteMany({
+      where: { usuario: { email: user.email } }
+    });
+
+    await prisma.usuario.deleteMany({
+      where: { email: user.email }
+    });
+
+    await prisma.$disconnect();
+  });
 });

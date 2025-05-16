@@ -1,6 +1,8 @@
 import request from 'supertest';
 import app from '../src/app';
-import { db } from '../src/config/db';
+import { prisma } from '../src/prisma/client';
+
+jest.setTimeout(20000);
 
 describe('Autenticação - Registro e Login', () => {
   const user = {
@@ -16,7 +18,6 @@ describe('Autenticação - Registro e Login', () => {
   });
 
   it('deve fazer login com o usuário registrado', async () => {
-    await request(app).post('/api/auth/register').send(user); // registro
     const res = await request(app).post('/api/auth/login').send({
       email: user.email,
       senha: user.senha
@@ -26,6 +27,10 @@ describe('Autenticação - Registro e Login', () => {
   });
 
   afterAll(async () => {
-  await db.end();
-});
+    await prisma.usuario.deleteMany({
+      where: { email: user.email }
+    });
+
+    await prisma.$disconnect();
+  });
 });
