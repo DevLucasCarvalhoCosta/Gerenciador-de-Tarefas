@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../src/app';
-import { prisma } from '../src/prisma/client';
+import { prisma } from '../prisma/client';
 
 jest.setTimeout(20000);
 

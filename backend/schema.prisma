@@ -35,4 +35,7 @@ model Tarefa {
   prioridade  PrioridadeTarefa @default(baixa)
   usuario     Usuario          @relation(fields: [usuarioId], references: [id])
   usuarioId   Int
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
+
