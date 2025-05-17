@@ -1,4 +1,4 @@
-backend@1.0.0 C:\Users\Lucas\Documents\Gerenciador-de-Tarefas\backend
+backend@1.0.0 C:\Users\KUMA\Documents\Gerenciador-de-Tarefas\backend
 ├── @prisma/client@6.8.2
 ├── @types/bcryptjs@2.4.6
 ├── @types/cors@2.8.18
