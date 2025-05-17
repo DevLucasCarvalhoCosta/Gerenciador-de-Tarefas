@@ -24,9 +24,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const tokenLocal = localStorage.getItem('token');
     const usuarioLocal = localStorage.getItem('usuario');
+
     if (tokenLocal && usuarioLocal) {
-      setToken(tokenLocal);
-      setUsuario(JSON.parse(usuarioLocal));
+      try {
+        const usuarioParse = JSON.parse(usuarioLocal);
+        setUsuario(usuarioParse);
+        setToken(tokenLocal);
+      } catch (e) {
+        console.error('Erro ao recuperar usuário:', e);
+        logout();
+      }
     }
   }, []);
 
