@@ -4,6 +4,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import styles from '../css/Login.module.css';
 
 interface LoginFormValues {
   email: string;
@@ -13,7 +14,7 @@ interface LoginFormValues {
 const Login: React.FC = () => {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // 👈 Instanciar
+  const navigate = useNavigate();
 
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
@@ -25,9 +26,8 @@ const Login: React.FC = () => {
 
       login(usuario, token);
 
-      // ✅ Redirecionar para a rota de tarefas após login
-      navigate('/tarefas');
-      
+      // Redireciona para a página Kanban após login
+      navigate('/kanban');
     } catch (err: any) {
       console.error(err);
       message.error('Credenciais inválidas ou erro de conexão.');
@@ -37,13 +37,13 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="login-background">
-      <div className="login-card">
-        <div className="logo-inline">
+    <div className={styles['login-background']}>
+      <div className={styles['login-card']}>
+        <div className={styles['logo-inline']}>
           <img
             src="/logo-taskflow.png"
             alt="TaskFlow Logo"
-            className="logo-inline-img"
+            className={styles['logo-inline-img']}
           />
         </div>
 
@@ -76,7 +76,7 @@ const Login: React.FC = () => {
               htmlType="submit"
               loading={loading}
               block
-              className="btn-login"
+              className={styles['btn-login']}
             >
               ENTRAR
             </Button>

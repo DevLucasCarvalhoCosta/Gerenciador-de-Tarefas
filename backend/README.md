@@ -1,24 +1,24 @@
+
 # 📋 Gerenciador de Tarefas - Backend
 
-Este é o backend do sistema de gerenciamento de tarefas, desenvolvido com Node.js, TypeScript, Express e MySQL. Ele oferece autenticação com JWT, CRUD completo de tarefas e testes automatizados com Jest. Agora, com integração total ao Prisma ORM.
+Este é o backend do sistema de gerenciamento de tarefas, desenvolvido com Node.js, TypeScript, Express, MySQL e Prisma ORM. Oferece autenticação JWT, CRUD completo de tarefas, controle de status e prioridade, além de testes automatizados com Jest.
 
 ---
 
 ## 🚀 Tecnologias Utilizadas
 
-O backend foi desenvolvido com foco em desempenho, segurança e boas práticas modernas. As tecnologias adotadas incluem:
+- **Node.js** – Ambiente JavaScript para servidor.
+- **TypeScript** – Tipagem estática para maior segurança e produtividade.
+- **Express** – Framework para APIs RESTful.
+- **MySQL** – Banco de dados relacional.
+- **Prisma ORM** – ORM moderno, eficiente e tipado para manipulação de dados.
 
-- **Node.js** – Ambiente de execução JavaScript no lado do servidor.
-- **TypeScript** – Superset de JavaScript com tipagem estática, trazendo maior segurança e produtividade.
-- **Express** – Framework minimalista e robusto para construção de APIs RESTful.
-- **MySQL** – Banco de dados relacional utilizado para persistência das informações.
-- **Prisma ORM** – ORM moderno e eficiente utilizado para manipulação de dados com tipagem completa.  
-  > 🔄 *O projeto foi inicialmente construído com `mysql2` e `db.query(...)`, e posteriormente migrado para o Prisma, demonstrando domínio de ambas as abordagens.*
-- **JWT (JSON Web Token)** – Para autenticação segura e baseada em tokens.
-- **bcryptjs** – Para criptografia de senhas no processo de registro e login.
-- **express-validator** – Para validação de dados nas requisições, garantindo integridade.
-- **Jest + Supertest** – Ferramentas de testes automatizados para simular requisições e validar comportamentos da API.
+  > 🔄 *Migrado de consultas manuais com `mysql2` para Prisma ORM, demonstrando domínio de ambas as abordagens.*
 
+- **JWT (JSON Web Token)** – Autenticação segura via tokens.
+- **bcryptjs** – Criptografia de senhas.
+- **express-validator** – Validação de dados nas requisições.
+- **Jest + Supertest** – Testes automatizados para validação da API.
 
 ---
 
@@ -26,10 +26,10 @@ O backend foi desenvolvido com foco em desempenho, segurança e boas práticas m
 
 ```
 src/
-├── prisma/            # Prisma Client e schema
-├── controllers/       # Lógica das rotas
+├── prisma/            # Schema e cliente Prisma
+├── controllers/       # Controladores das rotas
 ├── middlewares/       # Autenticação e validações
-├── routes/            # Rotas da API
+├── routes/            # Definição das rotas da API
 ├── app.ts             # Configuração principal da API
 └── index.ts           # Ponto de entrada
 ```
@@ -41,7 +41,7 @@ src/
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/seuusuario/gerenciador-tarefas.git
+git clone https://github.com/DevLucasCarvalhoCosta/Gerenciador-de-Tarefas.git
 cd gerenciador-tarefas/backend
 ```
 
@@ -51,15 +51,22 @@ cd gerenciador-tarefas/backend
 npm install
 ```
 
-3. Configure o `.env`:
+3. Configure o arquivo `.env`:
 
 ```env
 PORT=3001
-JWT_SECRET=sua_chave_secreta
-DATABASE_URL="mysql://root:sua_senha@localhost:3306/nome_do_banco"
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=123456
+DB_NAME=taskmanager
+JWT_SECRET= Sua chave
+
+# Prisma
+DATABASE_URL="mysql://root:123456@localhost:3306/taskmanager"
+
 ```
 
-4. Gere o client e o banco com Prisma:
+4. Gere o client e aplique migrations com Prisma:
 
 ```bash
 npx prisma migrate dev --name init
@@ -75,24 +82,28 @@ npm run dev
 
 ## 🔄 Migração do mysql2 para Prisma
 
-O projeto originalmente utilizava `mysql2` com `db.query(...)` manual. Agora foi migrado para o ORM **Prisma**, trazendo benefícios como:
+Antes, o projeto usava `mysql2` e queries manuais:
 
-- Tipagem automática de entidades
-- Integração com TypeScript
-- Migrations versionadas
-- Simplicidade nas queries
-
-### Exemplo da migração:
-
-**Antes (mysql2):**
 ```ts
 const [rows] = await db.query("SELECT * FROM usuarios WHERE email = ?", [email]);
 ```
 
-**Depois (Prisma):**
+Agora usa Prisma ORM, mais simples e seguro:
+
 ```ts
 const usuario = await prisma.usuario.findUnique({ where: { email } });
 ```
+
+---
+
+## 🔐 Regras para Status e Prioridade
+
+- **Status permitidos (no backend):**  
+  `'pendente'`, `'em_andamento'`, `'concluida'`  
+  > No frontend, converta o status para este formato antes de enviar.
+
+- **Prioridade permitida:**  
+  `'baixa'`, `'media'`, `'alta'`
 
 ---
 
@@ -110,7 +121,7 @@ const usuario = await prisma.usuario.findUnique({ where: { email } });
 - `PUT /api/tarefas/:id`
 - `DELETE /api/tarefas/:id`
 
-> Enviar header: `Authorization: Bearer <seu_token>`
+> Enviar no header: `Authorization: Bearer <seu_token>`
 
 ---
 
@@ -122,30 +133,31 @@ Rodar os testes:
 npm test
 ```
 
-- 8 testes cobrindo autenticação e CRUD de tarefas com token
-- Testes usando Jest + Supertest
-- Agora compatíveis com Prisma (com timeout aumentado)
+- Cobertura de testes para autenticação e CRUD de tarefas
+- Utiliza Jest + Supertest
+- Compatível com Prisma ORM
 
 ---
 
-## 🧠 Scrum e Jira (Exemplo)
+## 🧠 Exemplo Scrum e Jira
 
-### Épico:
+### Épico
+
 > Gestão de Tarefas com Acesso Seguro
 
-### História de Usuário:
-> Como colaborador, quero criar, listar e gerenciar tarefas, para organizar meu trabalho com segurança.
+### História de Usuário
 
-### Tarefa:
-> Criar API REST autenticada com JWT protegendo as rotas de tarefas e testá-la com Jest.
+> Como colaborador, quero criar, listar e gerenciar tarefas para organizar meu trabalho com segurança.
+
+### Tarefa
+
+> Criar API REST autenticada com JWT, protegendo as rotas de tarefas e testá-la com Jest.
 
 ---
 
-## ♻️ Refatoração (exemplo de código legado)
+## ♻️ Exemplo de Refatoração - Código Legado para Código Moderno
 
-Durante o desenvolvimento, foi identificado um padrão de código com baixa legibilidade, lógica dispersa e violação do princípio da responsabilidade única. A seguir, um exemplo fictício de refatoração que evidencia boas práticas aplicadas:
-
-### 🔴 Antes – Código legado com múltiplas responsabilidades
+**Antes (mistura de responsabilidades, falta padronização):**
 
 ```ts
 app.post('/api/tarefas', async (req, res) => {
@@ -173,19 +185,7 @@ app.post('/api/tarefas', async (req, res) => {
 });
 ```
 
----
-
-### ❌ Problemas encontrados:
-
-- Validações e criação de tarefa misturadas na mesma função.
-- Respostas sem padrão (uso de `.send()` com strings simples).
-- Falta de consistência e clareza na estrutura de dados.
-- Lógica de transformação de dados (`trim`, `Number()`) diretamente no controller.
-- Baixa reutilização de código.
-
----
-
-### ✅ Depois – Código refatorado com responsabilidade única e padrões REST
+**Depois (separação clara, uso do Prisma, respostas padrão):**
 
 ```ts
 import { RequestHandler } from 'express';
@@ -218,22 +218,9 @@ export const criarTarefa: RequestHandler = async (req, res) => {
 
 ---
 
-### 💡 Melhorias aplicadas:
-
-| Problema antigo                            | Solução aplicada                                 |
-|--------------------------------------------|--------------------------------------------------|
-| Código com múltiplas responsabilidades     | Separação clara entre validação, lógica e resposta |
-| Dados não tratados corretamente            | Uso de `.trim()` e checagem segura com optional chaining |
-| Falta de padrão nas respostas              | Respostas consistentes com `res.status().json()` |
-| Baixa clareza e manutenção                 | Função clara, reutilizável e fácil de testar     |
-
-Essa refatoração demonstra o compromisso com os princípios **SRP (Responsabilidade Única)**, **Clean Code**, e **boas práticas REST**, promovendo legibilidade, padronização e testabilidade do código.
-
----
-
 ## 📌 Autor
 
-- **Nome:** Lucas Carvalho Costa
-- **LinkedIn:** [linkedin.com/in/lucas-carvalho-costa](https://linkedin.com/in/lucas-carvalho-costa)
+- **Lucas Carvalho Costa**  
+- LinkedIn: [linkedin.com/in/devlucascarvalhocosta](https://linkedin.com/in/devlucascarvalhocosta)
 
 ---

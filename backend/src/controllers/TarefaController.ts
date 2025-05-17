@@ -1,31 +1,38 @@
+import { Request, Response } from 'express';
 import { RequestHandler } from 'express';
 import { prisma } from '../prisma/client';
 
 const criar: RequestHandler = async (req, res) => {
-  const { titulo, descricao } = req.body;
+  const { titulo, descricao, prioridade } = req.body;
   const usuarioId = (req as any).usuario.id;
 
   try {
-    await prisma.tarefa.create({
+    const tarefa = await prisma.tarefa.create({
       data: {
         titulo,
         descricao,
-        usuarioId
-      }
+        status: 'pendente', // forçando pendente
+        prioridade: prioridade || 'baixa',
+        usuarioId,
+      },
     });
 
-    res.status(201).json({ message: 'Tarefa criada com sucesso!' });
+    res.status(201).json(tarefa);
   } catch (error) {
     res.status(500).json({ error: 'Erro ao criar tarefa.' });
   }
 };
+
 
 const listar: RequestHandler = async (req, res) => {
   const usuarioId = (req as any).usuario.id;
 
   try {
     const tarefas = await prisma.tarefa.findMany({
-      where: { usuarioId }
+      where: { usuarioId },
+      orderBy: {
+        id: 'desc',
+      },
     });
 
     res.json(tarefas);
@@ -34,31 +41,48 @@ const listar: RequestHandler = async (req, res) => {
   }
 };
 
-const atualizar: RequestHandler = async (req, res) => {
+
+const atualizar = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
-  const { titulo, descricao, status } = req.body;
+  const { titulo, descricao, status, prioridade } = req.body;
   const usuarioId = (req as any).usuario.id;
+
+  const statusPermitidos = ['pendente', 'em_andamento', 'concluida'];
+  const prioridadePermitidas = ['baixa', 'media', 'alta'];
 
   try {
     const tarefa = await prisma.tarefa.findFirst({
-      where: { id: Number(id), usuarioId }
+      where: { id: Number(id), usuarioId },
     });
 
     if (!tarefa) {
-      res.status(404).json({ message: 'Tarefa não encontrada ou sem permissão.' });
-      return;
+      return res.status(404).json({ message: 'Tarefa não encontrada ou sem permissão.' });
     }
 
-    await prisma.tarefa.update({
+    if (status && !statusPermitidos.includes(status)) {
+      return res.status(400).json({ message: 'Status inválido.' });
+    }
+    if (prioridade && !prioridadePermitidas.includes(prioridade)) {
+      return res.status(400).json({ message: 'Prioridade inválida.' });
+    }
+
+    const dataToUpdate: any = {};
+    if (titulo !== undefined) dataToUpdate.titulo = titulo;
+    if (descricao !== undefined) dataToUpdate.descricao = descricao;
+    if (status !== undefined) dataToUpdate.status = status;
+    if (prioridade !== undefined) dataToUpdate.prioridade = prioridade;
+
+    const tarefaAtualizada = await prisma.tarefa.update({
       where: { id: Number(id) },
-      data: { titulo, descricao, status }
+      data: dataToUpdate,
     });
 
-    res.json({ message: 'Tarefa atualizada com sucesso!' });
+    return res.json(tarefaAtualizada);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao atualizar tarefa.' });
+    return res.status(500).json({ error: 'Erro ao atualizar tarefa.' });
   }
 };
+
 
 const deletar: RequestHandler = async (req, res) => {
   const { id } = req.params;

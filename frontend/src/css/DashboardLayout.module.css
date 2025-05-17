@@ -1,0 +1,58 @@
+/* dashboard.css */
+.ant-drawer-body {
+  padding: 0 !important;
+}
+
+.custom-menu {
+  height: 100%;
+  border-right: none;
+  border-radius: 0 16px 16px 0;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+}
+
+.custom-menu .ant-menu-item {
+  transition: background-color 0.3s ease;
+}
+
+.custom-menu .ant-menu-item:hover {
+  background-color: #e6f7ff !important;
+  border-radius: 8px;
+}
+
+.custom-menu .ant-menu-item-selected {
+  background-color: #bae7ff !important;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #003366 !important;
+}
+
+/* Título em headers */
+h3.ant-typography {
+  color: #fff !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Botões globais */
+.ant-btn {
+  font-weight: 600;
+  border-radius: 8px;
+  background-color: #003366;
+  color: #fff;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.ant-btn:hover {
+  background-color: #005299;
+}
+
+body.light-theme {
+  background-color: #fff;
+  color: #172b4d;
+}
+
+body.dark-theme {
+  background-color: #121212;
+  color: #eee;
+}
