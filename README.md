@@ -1,239 +1,167 @@
-# 📋 Gerenciador de Tarefas - Backend
+# 📋 Gerenciador de Tarefas
 
-Este é o backend do sistema de gerenciamento de tarefas, desenvolvido com Node.js, TypeScript, Express e MySQL. Ele oferece autenticação com JWT, CRUD completo de tarefas e testes automatizados com Jest. Agora, com integração total ao Prisma ORM.
-
----
-
-## 🚀 Tecnologias Utilizadas
-
-O backend foi desenvolvido com foco em desempenho, segurança e boas práticas modernas. As tecnologias adotadas incluem:
-
-- **Node.js** – Ambiente de execução JavaScript no lado do servidor.
-- **TypeScript** – Superset de JavaScript com tipagem estática, trazendo maior segurança e produtividade.
-- **Express** – Framework minimalista e robusto para construção de APIs RESTful.
-- **MySQL** – Banco de dados relacional utilizado para persistência das informações.
-- **Prisma ORM** – ORM moderno e eficiente utilizado para manipulação de dados com tipagem completa.  
-  > 🔄 *O projeto foi inicialmente construído com `mysql2` e `db.query(...)`, e posteriormente migrado para o Prisma, demonstrando domínio de ambas as abordagens.*
-- **JWT (JSON Web Token)** – Para autenticação segura e baseada em tokens.
-- **bcryptjs** – Para criptografia de senhas no processo de registro e login.
-- **express-validator** – Para validação de dados nas requisições, garantindo integridade.
-- **Jest + Supertest** – Ferramentas de testes automatizados para simular requisições e validar comportamentos da API.
-
+Repositório full-stack de um **Gerenciador de Tarefas** com **backend** em Node.js/TypeScript/Express/MySQL/Prisma e **frontend** em React/TypeScript/Ant Design. Funcionalidades principais: autenticação JWT, CRUD de tarefas, Kanban interativo, tema claro/escuro, animações e timestamps.
 
 ---
 
-## 📁 Estrutura de Pastas
+## 📂 Estrutura do Projeto
 
 ```
-src/
-├── prisma/            # Prisma Client e schema
-├── controllers/       # Lógica das rotas
-├── middlewares/       # Autenticação e validações
-├── routes/            # Rotas da API
-├── app.ts             # Configuração principal da API
-└── index.ts           # Ponto de entrada
+/
+├── backend/            # API RESTful em Node.js + TypeScript
+│   ├── src/
+│   ├── prisma/
+│   ├── controllers/
+│   ├── middlewares/
+│   ├── routes/
+│   ├── app.ts
+│   ├── index.ts
+│   └── tests/
+│
+├── frontend/           # SPA em React + TypeScript + Ant Design
+│   ├── src/
+│   ├── api/
+│   ├── components/
+│   ├── context/
+│   ├── hooks/
+│   ├── pages/
+│   ├── routes/
+│   ├── styles/
+│   └── assets/
+│
+└── README.md           # Documentação unificada (este arquivo)
 ```
 
 ---
 
-## ⚙️ Instalação
+## 🚀 Tecnologias
 
-1. Clone o repositório:
+**Backend**  
+- Node.js, TypeScript, Express  
+- MySQL, Prisma ORM  
+- JWT, bcryptjs, express-validator  
+- Jest + Supertest (testes)
+
+**Frontend**  
+- React, TypeScript, Vite/CRA  
+- Ant Design, CSS Modules  
+- Axios, Context API  
+- Framer Motion, @hello-pangea/dnd  
+- dotenv (variáveis de ambiente)
+
+---
+
+## ⚙️ Pré-requisitos
+
+- Node.js v14+  
+- npm ou yarn  
+- MySQL instalado e rodando  
+
+---
+
+## 🛠️ Setup
+
+### 1. Clonar Repositório
 
 ```bash
-git clone https://github.com/seuusuario/gerenciador-tarefas.git
+git clone https://github.com/DevLucasCarvalhoCosta/Gerenciador-de-Tarefas.git
+```
+
+### 2. Configurar Backend
+
+```bash
 cd gerenciador-tarefas/backend
-```
-
-2. Instale as dependências:
-
-```bash
 npm install
 ```
 
-3. Configure o `.env`:
+Crie `.env`:
 
 ```env
-PORT=3001
-JWT_SECRET=sua_chave_secreta
-DATABASE_URL="mysql://root:sua_senha@localhost:3306/nome_do_banco"
+PORT=
+DB_HOST=
+DB_USER=
+DB_PASS=
+DB_NAME=
+JWT_SECRET=
+
+# Prisma
+DATABASE_URL=""
 ```
 
-4. Gere o client e o banco com Prisma:
+#### Rodar Migrations e Iniciar
 
 ```bash
 npx prisma migrate dev --name init
-```
-
-5. Inicie a API:
-
-```bash
 npm run dev
 ```
 
----
-
-## 🔄 Migração do mysql2 para Prisma
-
-O projeto originalmente utilizava `mysql2` com `db.query(...)` manual. Agora foi migrado para o ORM **Prisma**, trazendo benefícios como:
-
-- Tipagem automática de entidades
-- Integração com TypeScript
-- Migrations versionadas
-- Simplicidade nas queries
-
-### Exemplo da migração:
-
-**Antes (mysql2):**
-```ts
-const [rows] = await db.query("SELECT * FROM usuarios WHERE email = ?", [email]);
-```
-
-**Depois (Prisma):**
-```ts
-const usuario = await prisma.usuario.findUnique({ where: { email } });
-```
-
----
-
-## 🔐 Rotas da API
-
-### Autenticação
-
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-
-### Tarefas (requer token JWT)
-
-- `GET /api/tarefas`
-- `POST /api/tarefas`
-- `PUT /api/tarefas/:id`
-- `DELETE /api/tarefas/:id`
-
-> Enviar header: `Authorization: Bearer <seu_token>`
-
----
-
-## ✅ Testes Automatizados
-
-Rodar os testes:
+Testes:
 
 ```bash
 npm test
 ```
 
-- 8 testes cobrindo autenticação e CRUD de tarefas com token
-- Testes usando Jest + Supertest
-- Agora compatíveis com Prisma (com timeout aumentado)
+### 3. Configurar Frontend
 
----
+Em outra aba/terminal:
 
-## 🧠 Scrum e Jira (Exemplo)
-
-### Épico:
-> Gestão de Tarefas com Acesso Seguro
-
-### História de Usuário:
-> Como colaborador, quero criar, listar e gerenciar tarefas, para organizar meu trabalho com segurança.
-
-### Tarefa:
-> Criar API REST autenticada com JWT protegendo as rotas de tarefas e testá-la com Jest.
-
----
-
-## ♻️ Refatoração (exemplo de código legado)
-
-Durante o desenvolvimento, foi identificado um padrão de código com baixa legibilidade, lógica dispersa e violação do princípio da responsabilidade única. A seguir, um exemplo fictício de refatoração que evidencia boas práticas aplicadas:
-
-### 🔴 Antes – Código legado com múltiplas responsabilidades
-
-```ts
-app.post('/api/tarefas', async (req, res) => {
-  const { titulo, descricao } = req.body;
-  const usuarioId = req.headers['x-user-id'];
-
-  if (!titulo || !descricao) {
-    res.status(400).send("Campos obrigatórios não preenchidos.");
-    return;
-  }
-
-  const tarefa = {
-    titulo: titulo.trim(),
-    descricao: descricao.trim(),
-    usuario_id: Number(usuarioId),
-    status: 'pendente'
-  };
-
-  try {
-    await db.query('INSERT INTO tarefas SET ?', tarefa);
-    res.send("Criado com sucesso.");
-  } catch (err) {
-    res.status(500).send("Erro interno.");
-  }
-});
+```bash
+cd gerenciador-tarefas/frontend
+npm install
 ```
 
----
+Crie `.env`:
 
-### ❌ Problemas encontrados:
-
-- Validações e criação de tarefa misturadas na mesma função.
-- Respostas sem padrão (uso de `.send()` com strings simples).
-- Falta de consistência e clareza na estrutura de dados.
-- Lógica de transformação de dados (`trim`, `Number()`) diretamente no controller.
-- Baixa reutilização de código.
-
----
-
-### ✅ Depois – Código refatorado com responsabilidade única e padrões REST
-
-```ts
-import { RequestHandler } from 'express';
-import { prisma } from '../prisma/client';
-
-export const criarTarefa: RequestHandler = async (req, res) => {
-  const { titulo, descricao } = req.body;
-  const usuarioId = (req as any).usuario.id;
-
-  if (!titulo?.trim() || !descricao?.trim()) {
-    return res.status(400).json({ message: "Título e descrição são obrigatórios." });
-  }
-
-  try {
-    await prisma.tarefa.create({
-      data: {
-        titulo: titulo.trim(),
-        descricao: descricao.trim(),
-        status: 'pendente',
-        usuarioId
-      }
-    });
-
-    return res.status(201).json({ message: "Tarefa criada com sucesso!" });
-  } catch (error) {
-    return res.status(500).json({ error: "Erro interno ao criar a tarefa." });
-  }
-};
+```env
+REACT_APP_API_URL=http://localhost:3001/api
 ```
 
+Iniciar SPA:
+
+```bash
+npm start
+```
+
+Abra `http://localhost:3000`.
+
 ---
 
-### 💡 Melhorias aplicadas:
+## 📋 Uso
 
-| Problema antigo                            | Solução aplicada                                 |
-|--------------------------------------------|--------------------------------------------------|
-| Código com múltiplas responsabilidades     | Separação clara entre validação, lógica e resposta |
-| Dados não tratados corretamente            | Uso de `.trim()` e checagem segura com optional chaining |
-| Falta de padrão nas respostas              | Respostas consistentes com `res.status().json()` |
-| Baixa clareza e manutenção                 | Função clara, reutilizável e fácil de testar     |
+1. Acesse a rota `/register` (backend) para criar usuário ou use SPA.
+2. Faça login no frontend; após sucesso, será redirecionado ao Kanban.
+3. Crie, arraste e edite tarefas com prioridade, veja createdAt/updatedAt.
+4. Altere tema via botão no header.
 
-Essa refatoração demonstra o compromisso com os princípios **SRP (Responsabilidade Única)**, **Clean Code**, e **boas práticas REST**, promovendo legibilidade, padronização e testabilidade do código.
+---
+
+## 📝 Scripts Úteis
+
+**Backend** (dentro de `backend/`):
+- `npm run dev` – Dev server com ts-node-dev  
+- `npm test` – Executa testes Jest + Supertest  
+
+**Frontend** (dentro de `frontend/`):
+- `npm run dev` – Dev server Vite  
+- `npm start` – Dev server CRA  
+- `npm run build` – Build de produção  
+- `npm run preview` – Preview do build  
+
+---
+
+## 🤝 Contribuição
+
+1. Fork do projeto  
+2. Crie branch: `git checkout -b feature/nova-funcionalidade`  
+3. Commit das mudanças: `git commit -m "feat: adicionar..."`  
+4. Push: `git push origin feature/nova-funcionalidade`  
+5. Abra Pull Request
 
 ---
 
 ## 📌 Autor
 
-- **Nome:** Lucas Carvalho Costa
-- **LinkedIn:** [linkedin.com/in/lucas-carvalho-costa](https://linkedin.com/in/lucas-carvalho-costa)
+**Lucas Carvalho Costa**  
+- LinkedIn: https://linkedin.com/in/devlucascarvalhocosta 
 
 ---
