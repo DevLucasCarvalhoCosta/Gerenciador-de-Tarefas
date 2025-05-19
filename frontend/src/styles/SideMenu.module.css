@@ -1,0 +1,18 @@
+.toggleButton {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  color: inherit;
+}
+.light {
+  --ant-drawer-body-background: #fff;
+  --ant-drawer-header-background: #fff;
+  color: #172b4d;
+}
+.dark {
+  --ant-drawer-body-background: #333;
+  --ant-drawer-header-background: #333;
+  color: #eee;
+}

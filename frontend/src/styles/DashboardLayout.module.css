@@ -1,0 +1,75 @@
+/* Container geral do layout */
+.container {
+  min-height: 100vh;
+}
+
+/* Tema claro: o body já possui light-theme */
+.lightWrapper {
+  
+}
+
+/* Tema escuro: fundo geral e texto padrão */
+.darkWrapper {
+  background-color: #121212;
+  color: #eee;
+}
+
+/* Layout interno para organização do header e content */
+.mainLayout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Conteúdo principal (Outlet), com fundo condicionado ao tema */
+.content {
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  transition: background-color .3s, color .3s;
+}
+
+/* Estilos de conteúdo para tema claro */
+.lightWrapper .content {
+  background-color: #f0f2f5;
+  color: #172b4d;
+}
+
+/* Estilos de conteúdo para tema escuro */
+.darkWrapper .content {
+  background-color: #222;
+  color: #eee;
+}
+
+/* SideMenu também herda o tema */
+.darkWrapper .ant-drawer-body,
+.darkWrapper .ant-drawer-header {
+  background-color: #333 !important;
+  color: #eee;
+}
+.lightWrapper .ant-drawer-body,
+.lightWrapper .ant-drawer-header {
+  background-color: #fff !important;
+  color: #172b4d;
+}
+
+/* Força o texto dentro do conteúdo para ser branco em dark */
+.darkWrapper .content * {
+  color: inherit !important;
+}
+
+/* Para o quadro de tarefas (Kanban) herdar o tema */
+.darkWrapper .kanban-wrapper,
+.darkWrapper .kanban-column,
+.darkWrapper .app-container {
+  background-color: #333;
+  color: #eee;
+}
+
+/* Ajuste nos títulos e botões internos */
+.darkWrapper .ant-typography,
+.darkWrapper .ant-btn,
+.darkWrapper .ant-input,
+.darkWrapper .ant-select-selector {
+  color: #eee;
+  background-color: #444;
+}

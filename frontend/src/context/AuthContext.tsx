@@ -1,5 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 
 interface Usuario {
   id: number;
@@ -10,46 +17,62 @@ interface Usuario {
 interface AuthContextData {
   usuario: Usuario | null;
   token: string | null;
-  login: (usuario: Usuario, token: string) => void;
-  logout: () => void;
+  login(email: string, senha: string): Promise<void>;
+  logout(): void;
 }
 
-const AuthContext = createContext<AuthContextData>({} as AuthContextData);
+const AuthContext = createContext<AuthContextData>({
+  usuario: null,
+  token: null,
+  login: async () => {},
+  logout: () => {},
+});
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken]         = useState<string | null>(null);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const tokenLocal = localStorage.getItem('token');
     const usuarioLocal = localStorage.getItem('usuario');
-
     if (tokenLocal && usuarioLocal) {
-      try {
-        const usuarioParse = JSON.parse(usuarioLocal);
-        setUsuario(usuarioParse);
-        setToken(tokenLocal);
-      } catch (e) {
-        console.error('Erro ao recuperar usuário:', e);
-        logout();
-      }
+      const user: Usuario = JSON.parse(usuarioLocal);
+      setToken(tokenLocal);
+      setUsuario(user);
+      api.defaults.headers.common['Authorization'] = `Bearer ${tokenLocal}`;
     }
   }, []);
 
-  const login = (usuario: Usuario, token: string) => {
-    setUsuario(usuario);
-    setToken(token);
-    localStorage.setItem('usuario', JSON.stringify(usuario));
-    localStorage.setItem('token', token);
+  const login = async (email: string, senha: string) => {
+    const res = await api.post<{ token: string; user: Usuario }>('/auth/login', {
+      email,
+      senha,
+    });
+    const { token: newToken, user } = res.data;
+
+ 
+    localStorage.setItem('token', newToken);
+    localStorage.setItem('usuario', JSON.stringify(user));
+
+
+    setToken(newToken);
+    setUsuario(user);
+    api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+
+
+    navigate('/kanban');
   };
+
 
   const logout = () => {
     setUsuario(null);
     setToken(null);
-    localStorage.removeItem('usuario');
+    delete api.defaults.headers.common['Authorization'];
     localStorage.removeItem('token');
-    navigate('/');
+    localStorage.removeItem('usuario');
+    navigate('/login');
   };
 
   return (

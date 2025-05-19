@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, message } from 'antd';
+import { Form, Input, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import styles from '../css/Login.module.css';
+import { useAuth } from '../../context/AuthContext';
+import Button from '../../components/UI/Button';
+import styles from '../../styles/Login.module.css';
 
 interface LoginFormValues {
   email: string;
@@ -14,23 +13,15 @@ interface LoginFormValues {
 const Login: React.FC = () => {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login', values);
-      const { token, nome, id } = response.data;
-
-      const usuario = { id, nome, email: values.email };
-
-      login(usuario, token);
-
-      // Redireciona para a página Kanban após login
-      navigate('/kanban');
+      await login(values.email, values.senha);
+     
     } catch (err: any) {
       console.error(err);
-      message.error('Credenciais inválidas ou erro de conexão.');
+      message.error(err.response?.data?.message || 'Credenciais inválidas ou erro de conexão.');
     } finally {
       setLoading(false);
     }
