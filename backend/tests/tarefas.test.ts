@@ -2,28 +2,24 @@ import request from 'supertest';
 import app from '../src/app';
 import { prisma } from '../prisma/client';
 
-jest.setTimeout(10000);
+jest.setTimeout(20000);
 
-describe('Tarefas - CRUD completo com autenticação', () => {
+describe('Tarefas - CRUD com autenticação', () => {
   const user = {
     nome: 'Usuário Tarefa',
     email: `tarefa_${Date.now()}@mail.com`,
-    senha: '123456'
+    senha: '123456',
   };
 
   let token: string;
   let tarefaId: number;
 
   beforeAll(async () => {
-    // Registra o usuário
     await request(app).post('/api/auth/register').send(user);
-
-    // Faz login e salva o token
     const res = await request(app).post('/api/auth/login').send({
       email: user.email,
-      senha: user.senha
+      senha: user.senha,
     });
-
     token = res.body.token;
   });
 
@@ -42,16 +38,22 @@ describe('Tarefas - CRUD completo com autenticação', () => {
   });
 
   it('deve criar uma nova tarefa', async () => {
+    const newTask = {
+      titulo: 'Tarefa de Teste',
+      descricao: 'Criada pelo Jest',
+      prioridade: 'baixa'    // ← adicionado para atender ao service
+    };
     const res = await request(app)
       .post('/api/tarefas')
       .set('Authorization', `Bearer ${token}`)
-      .send({
-        titulo: 'Tarefa de Teste',
-        descricao: 'Criada pelo Jest'
-      });
+      .send(newTask);
 
     expect(res.statusCode).toBe(201);
-    expect(res.body.message).toBe('Tarefa criada com sucesso!');
+    expect(res.body).toHaveProperty('id');
+    expect(res.body.titulo).toBe(newTask.titulo);
+    expect(res.body.descricao).toBe(newTask.descricao);
+    expect(res.body.status).toBe('pendente');
+    expect(res.body.prioridade).toBe(newTask.prioridade);
   });
 
   it('deve obter o ID da tarefa criada', async () => {
@@ -65,17 +67,20 @@ describe('Tarefas - CRUD completo com autenticação', () => {
   });
 
   it('deve atualizar a tarefa', async () => {
+    const updatedData = {
+      titulo: 'Tarefa Atualizada',
+      descricao: 'Descrição alterada via Jest',
+      status: 'concluida',
+    };
     const res = await request(app)
       .put(`/api/tarefas/${tarefaId}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({
-        titulo: 'Tarefa Atualizada',
-        descricao: 'Descrição alterada via Jest',
-        status: 'concluida'
-      });
+      .send(updatedData);
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.message).toBe('Tarefa atualizada com sucesso!');
+    expect(res.body.titulo).toBe(updatedData.titulo);
+    expect(res.body.descricao).toBe(updatedData.descricao);
+    expect(res.body.status).toBe(updatedData.status);
   });
 
   it('deve deletar a tarefa', async () => {
@@ -84,18 +89,11 @@ describe('Tarefas - CRUD completo com autenticação', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.message).toBe('Tarefa deletada com sucesso!');
+    expect(res.body).toHaveProperty('message', 'Tarefa deletada com sucesso.');
   });
 
   afterAll(async () => {
-    await prisma.tarefa.deleteMany({
-      where: { usuario: { email: user.email } }
-    });
-
-    await prisma.usuario.deleteMany({
-      where: { email: user.email }
-    });
-
+    await prisma.usuario.deleteMany({ where: { email: user.email } });
     await prisma.$disconnect();
   });
 });

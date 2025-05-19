@@ -165,3 +165,10 @@ Abra `http://localhost:3000`.
 - LinkedIn: https://linkedin.com/in/devlucascarvalhocosta 
 
 ---
+
+## Demonstração do Projeto
+
+Clique na imagem abaixo para assistir a uma demonstração interativa do projeto:
+
+[![Assista à demonstração](https://imgur.com/gallery/task-2e69i1i.png)](https://app.arcade.software/share/OPBix5w5RZAbk3XJuy9p)
+
