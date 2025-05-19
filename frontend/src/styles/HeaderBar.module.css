@@ -1,0 +1,23 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.lightHeader {
+  composes: header;
+  background-color: #fff;
+  color: #172b4d;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.darkHeader {
+  composes: header;
+  background-color: #222;
+  color: #eee;
+  box-shadow: 0 1px 4px rgba(255, 255, 255, 0.1);
+}

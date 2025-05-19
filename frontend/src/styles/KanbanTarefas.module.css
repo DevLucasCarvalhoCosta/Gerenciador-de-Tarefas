@@ -1,0 +1,173 @@
+/* Variáveis globais para light/dark */
+:root {
+  --bg-page: #fff;
+  --panel-bg: #fff;
+  --column-bg: #f4f5f7;
+  --card-bg: #fff;
+  --text-color: #172b4d;
+  --input-bg: #fff;
+  --input-text: #000;
+  --tag-baixa: #61bd4f;
+  --tag-media: #ffab4a;
+  --tag-alta: #eb5a46;
+}
+
+/* Tema escuro: aplicado via classe .darkMode no container pai */
+.darkMode {
+  --bg-page: #121212;
+  --panel-bg: #1e1e1e;
+  --column-bg: #2a2a2a;
+  --card-bg: #333;
+  --text-color: #eee;
+  --input-bg: #2a2a2a;
+  --input-text: #eee;
+  --tag-opacity: 0.9;
+}
+
+/* Container principal */
+.appContainer {
+  width: 100%;
+  margin: 0;
+  padding: 32px;
+  box-sizing: border-box;
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Painel atrás do Kanban */
+.boardPanel {
+  background-color: var(--panel-bg);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease;
+}
+
+/* Título da página */
+.pageTitle {
+  text-align: center;
+  margin-bottom: 24px;
+  color: var(--text-color);
+}
+
+/* Wrapper das colunas */
+.kanbanWrapper {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  overflow-x: auto;
+}
+
+/* Cada coluna */
+.kanbanColumn {
+  flex: 1;
+  min-width: 240px;
+  background-color: var(--column-bg);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.kanbanColumn h4 {
+  margin: 0 0 12px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+/* Card */
+.kanbanCard {
+  background-color: var(--card-bg);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  color: var(--text-color);
+}
+.kanbanCard:hover,
+.dragging {
+  background-color: #e3fcef;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark mode override for hover/drag */
+.darkMode .kanbanCard:hover,
+.darkMode .dragging {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Conteúdo interno do card */
+.cardContent {
+  flex: 1;
+}
+
+/* Priority Tag Styling */
+.cardFooter .ant-tag {
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px;
+  padding: 4px 10px !important;
+  color: #fff !important;
+}
+.cardFooter .ant-tag[title="baixa"] {
+  background-color: var(--tag-baixa) !important;
+}
+.cardFooter .ant-tag[title="media"] {
+  background-color: var(--tag-media) !important;
+}
+.cardFooter .ant-tag[title="alta"] {
+  background-color: var(--tag-alta) !important;
+}
+.darkMode .cardFooter .ant-tag {
+  opacity: var(--tag-opacity, 1) !important;
+  box-shadow: none !important;
+}
+
+/* Botão nova tarefa */
+.kanbanNewTaskBtn {
+  margin-bottom: 12px !important;
+}
+
+/* Ícone de delete */
+.kanbanDeleteIcon {
+  margin-left: 12px;
+}
+
+/* Inputs, selects e botões */
+input.ant-input,
+.ant-input-affix-wrapper,
+.ant-input-search .ant-input,
+.ant-select-selector,
+.ant-btn,
+.ant-btn-primary,
+.ant-input-search-button {
+  background-color: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border-color: var(--input-bg) !important;
+}
+
+/* Modal */
+.ant-modal-content,
+.ant-modal-header,
+.ant-modal-footer {
+  background-color: var(--panel-bg) !important;
+  color: var(--text-color) !important;
+}
+.ant-modal-close {
+  color: var(--text-color) !important;
+}

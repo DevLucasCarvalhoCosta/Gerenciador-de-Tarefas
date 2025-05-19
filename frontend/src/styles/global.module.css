@@ -1,0 +1,175 @@
+/* global.css */
+body {
+  background: url('../../public/bg-taskflow.png') no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  font-family: 'Segoe UI', 'Inter', sans-serif;
+}
+
+
+
+::-webkit-scrollbar-thumb {
+  background: #005299;
+  border-radius: 3px;
+}
+
+/* global.module.css */
+:global(body) {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+}
+
+
+body.light-theme {
+  background-color: #fff;
+  color: #172b4d;
+}
+
+body.dark-theme {
+  background-color: #121212 !important;
+  color: #eee !important;
+}
+
+/* Para os containers do Ant Design não sobrescreverem o body */
+.ant-layout, .ant-layout-content, .ant-drawer-body {
+  background: transparent;
+}
+
+:global(.darkWrapper) :global(.app-container),
+:global(.darkWrapper) :global(.kanban-wrapper),
+:global(.darkWrapper) :global(.kanban-column) {
+  background-color: #333 !important;
+  color: #eee !important;
+}
+
+:global(.darkWrapper) :global(.kanban-card) {
+  background-color: #2e2e2e !important;
+  color: #eee !important;
+}
+
+/* Inputs, botões e selects internos */
+.darkWrapper .ant-btn,
+.darkWrapper .ant-input,
+.darkWrapper .ant-select-selector {
+  background-color: #444 !important;
+  color: #fff !important;
+}
+
+/* SideMenu herda tema via wrapper */
+.darkWrapper .ant-drawer-body,
+.darkWrapper .ant-drawer-header {
+  background-color: #333 !important;
+  color: #eee !important;
+}
+.lightWrapper .ant-drawer-body,
+.lightWrapper .ant-drawer-header {
+  background-color: #fff !important;
+  color: #172b4d !important;
+}
+
+/* Container principal do layout: mostra o background configurável */
+.container {
+  min-height: 100vh;
+  /* use a variável --layout-bg para definir background dinâmico */
+  background-image: var(--layout-bg, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Layout interno (HeaderBar + Content) */
+.mainLayout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background: transparent;
+}
+
+/* Tema claro: usa transparência para destacar o painel */
+.lightWrapper {
+  /* nada extra */
+}
+.lightWrapper .content {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #172b4d;
+}
+
+/* Tema escuro: painel semi-transparente sobre o background */
+.darkWrapper {
+  background-color: #121212;
+  color: #eee;
+}
+.darkWrapper .content {
+  background-color: rgba(34, 34, 34, 0.85);
+  color: #eee;
+}
+
+/* Área onde <Outlet/> renderiza conteúdo, bordas arredondadas */
+.content {
+  margin: 24px;
+  padding: 24px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+:global(.content .app-container),
+:global(.content .kanban-wrapper),
+:global(.content .kanban-column) {
+  background: transparent;
+}
+
+:global(.darkWrapper) :global(.app-container),
+:global(.darkWrapper) :global(.kanban-wrapper),
+:global(.darkWrapper) :global(.kanban-column) {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: #eee !important;
+}
+
+:global(.darkWrapper) :global(.kanban-card) {
+  background-color: rgba(34, 34, 34, 0.8) !important;
+  color: #eee !important;
+}
+
+/* Inputs, botões e selects em dark mode dentro do conteúdo */
+.darkWrapper .ant-btn,
+.darkWrapper .ant-input,
+.darkWrapper .ant-select-selector {
+  background-color: #444 !important;
+  color: #fff !important;
+}
+
+/* SideMenu herda tema via wrapper */
+.darkWrapper .ant-drawer-body,
+.darkWrapper .ant-drawer-header {
+  background-color: #333 !important;
+  color: #eee !important;
+}
+.lightWrapper .ant-drawer-body,
+.lightWrapper .ant-drawer-header {
+  background-color: #fff !important;
+  color: #172b4d !important;
+}
+
+/* src/styles/global.module.css */
+:root {
+  --bg-light: #f0f2f5;
+  --bg-dark: #222;
+  --text-light: #172b4d;
+  --text-dark: #eee;
+}
+
+body.light-theme {
+  --app-bg: var(--bg-light);
+  --app-text: var(--text-light);
+}
+
+body.dark-theme {
+  --app-bg: var(--bg-dark);
+  --app-text: var(--text-dark);
+}
+
+.app-container {
+  background-color: var(--app-bg) !important;
+  color: var(--app-text) !important;
+}
